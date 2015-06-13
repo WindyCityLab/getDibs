@@ -13,6 +13,8 @@
 		1997BC661B2C7ABA00140A9B /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1997BC651B2C7ABA00140A9B /* Images.xcassets */; };
 		1997BC691B2C7ABA00140A9B /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1997BC671B2C7ABA00140A9B /* LaunchScreen.xib */; };
 		1997BC751B2C7ABA00140A9B /* GetDibsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1997BC741B2C7ABA00140A9B /* GetDibsTests.swift */; };
+		1997BC7F1B2C7AEF00140A9B /* BLEDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1997BC7E1B2C7AEF00140A9B /* BLEDevice.swift */; };
+		1997BC811B2C889700140A9B /* EquipmentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1997BC801B2C889700140A9B /* EquipmentCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,6 +38,8 @@
 		1997BC6E1B2C7ABA00140A9B /* GetDibsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GetDibsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1997BC731B2C7ABA00140A9B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1997BC741B2C7ABA00140A9B /* GetDibsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetDibsTests.swift; sourceTree = "<group>"; };
+		1997BC7E1B2C7AEF00140A9B /* BLEDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEDevice.swift; sourceTree = "<group>"; };
+		1997BC801B2C889700140A9B /* EquipmentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EquipmentCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,6 +83,8 @@
 			children = (
 				1997BC5E1B2C7ABA00140A9B /* AppDelegate.swift */,
 				1997BC601B2C7ABA00140A9B /* ViewController.swift */,
+				1997BC801B2C889700140A9B /* EquipmentCell.swift */,
+				1997BC7E1B2C7AEF00140A9B /* BLEDevice.swift */,
 				1997BC621B2C7ABA00140A9B /* Main.storyboard */,
 				1997BC651B2C7ABA00140A9B /* Images.xcassets */,
 				1997BC671B2C7ABA00140A9B /* LaunchScreen.xib */,
@@ -213,6 +219,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				1997BC611B2C7ABA00140A9B /* ViewController.swift in Sources */,
+				1997BC7F1B2C7AEF00140A9B /* BLEDevice.swift in Sources */,
+				1997BC811B2C889700140A9B /* EquipmentCell.swift in Sources */,
 				1997BC5F1B2C7ABA00140A9B /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
