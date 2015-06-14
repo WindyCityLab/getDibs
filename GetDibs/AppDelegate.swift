@@ -9,6 +9,8 @@
 import UIKit
 import Parse
 
+let kPushReceived = "kPushReceived"
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
@@ -23,12 +25,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         Parse.setApplicationId(kAppID, clientKey: kClientKey);
 
-        application.registerUserNotificationSettings(UIUserNotificationSettings(forTypes: UIUserNotificationType.Sound |
-            UIUserNotificationType.Alert | UIUserNotificationType.Badge, categories: nil))
+        if application.respondsToSelector("registerUserNotificationSettings:") {
+
+            let types:UIUserNotificationType = (.Alert | .Badge | .Sound)
+            let settings:UIUserNotificationSettings = UIUserNotificationSettings(forTypes: types, categories: nil)
+
+            application.registerUserNotificationSettings(settings)
+            application.registerForRemoteNotifications()
+
+        }
         
         return true
     }
 
+    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+        let currentInstallation = PFInstallation.currentInstallation()
+        currentInstallation.setDeviceTokenFromData(deviceToken)
+        currentInstallation.saveInBackgroundWithBlock { (success, error) -> Void in
+            ()
+        }
+    }
+
+    func application(application: UIApplication, didReceiveRemoteNotification userInfo: [NSObject : AnyObject]) {
+        //PFPush.handlePush(userInfo)
+        NSNotificationCenter.defaultCenter().postNotificationName(kPushReceived, object: nil);
+    }
+    
+    
     func applicationWillResignActive(application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.

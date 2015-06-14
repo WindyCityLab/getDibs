@@ -43,6 +43,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             presentViewController(confirm, animated: true, completion: nil)
         }
     }
+    @IBAction func refreshButtonTapped(sender: AnyObject) {
+        queryAuthorizedEquipment()
+    }
     //MARK:
     //MARK: Tableview delegates and datasource
     //MARK:
@@ -84,6 +87,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     func queryAuthorizedEquipment()
     {
         AuthorizedEquipment.getAuthorizedMachines({ (machines, error) -> Void in
+            self.authorizedMachines.removeAll(keepCapacity: true)
             for machine in machines!
             {
                 let m = machine as! AuthorizedEquipment
@@ -92,6 +96,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             self.equipment = BLEDevice.sharedInstance;
             self.equipment.delegate = self;
             self.equipment.begin();
+            self.tableView.reloadData()
         })
     }
 
@@ -119,7 +124,10 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        PFUser.logOut()
+        NSNotificationCenter.defaultCenter().addObserverForName(kPushReceived, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
+            self.queryAuthorizedEquipment()
+        }
+//        PFUser.logOut()
     }
 
     override func didReceiveMemoryWarning() {
