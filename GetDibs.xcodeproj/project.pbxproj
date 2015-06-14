@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		196018671B2CA7AE00B420B7 /* BLEPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 196018661B2CA7AE00B420B7 /* BLEPeripheral.swift */; };
+		196018691B2CABD200B420B7 /* AuthorizedEquipment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 196018681B2CABD200B420B7 /* AuthorizedEquipment.swift */; };
+		196018EA1B2CB99900B420B7 /* ParseUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 196018E91B2CB99900B420B7 /* ParseUI.framework */; };
+		196018EC1B2DE0F300B420B7 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 196018EB1B2DE0F300B420B7 /* Extensions.swift */; };
 		1997BC5F1B2C7ABA00140A9B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1997BC5E1B2C7ABA00140A9B /* AppDelegate.swift */; };
 		1997BC611B2C7ABA00140A9B /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1997BC601B2C7ABA00140A9B /* ViewController.swift */; };
 		1997BC641B2C7ABA00140A9B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1997BC621B2C7ABA00140A9B /* Main.storyboard */; };
@@ -15,6 +19,7 @@
 		1997BC751B2C7ABA00140A9B /* GetDibsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1997BC741B2C7ABA00140A9B /* GetDibsTests.swift */; };
 		1997BC7F1B2C7AEF00140A9B /* BLEDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1997BC7E1B2C7AEF00140A9B /* BLEDevice.swift */; };
 		1997BC811B2C889700140A9B /* EquipmentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1997BC801B2C889700140A9B /* EquipmentCell.swift */; };
+		B8A0BE882514FD1DF26E6DF9 /* Pods_GetDibs.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C79DA1FDF406CFA3592AC29D /* Pods_GetDibs.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,6 +33,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		196018661B2CA7AE00B420B7 /* BLEPeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEPeripheral.swift; sourceTree = "<group>"; };
+		196018681B2CABD200B420B7 /* AuthorizedEquipment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthorizedEquipment.swift; sourceTree = "<group>"; };
+		1960186C1B2CB69500B420B7 /* GetDibs-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GetDibs-Bridging-Header.h"; sourceTree = "<group>"; };
+		196018E91B2CB99900B420B7 /* ParseUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ParseUI.framework; sourceTree = "<group>"; };
+		196018EB1B2DE0F300B420B7 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		1997BC591B2C7ABA00140A9B /* GetDibs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GetDibs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1997BC5D1B2C7ABA00140A9B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1997BC5E1B2C7ABA00140A9B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -40,6 +50,9 @@
 		1997BC741B2C7ABA00140A9B /* GetDibsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetDibsTests.swift; sourceTree = "<group>"; };
 		1997BC7E1B2C7AEF00140A9B /* BLEDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEDevice.swift; sourceTree = "<group>"; };
 		1997BC801B2C889700140A9B /* EquipmentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EquipmentCell.swift; sourceTree = "<group>"; };
+		442861A008DF10675CAED3BC /* Pods-GetDibs.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GetDibs.release.xcconfig"; path = "Pods/Target Support Files/Pods-GetDibs/Pods-GetDibs.release.xcconfig"; sourceTree = "<group>"; };
+		952FB4BA2490BE47A6E6528E /* Pods-GetDibs.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-GetDibs.debug.xcconfig"; path = "Pods/Target Support Files/Pods-GetDibs/Pods-GetDibs.debug.xcconfig"; sourceTree = "<group>"; };
+		C79DA1FDF406CFA3592AC29D /* Pods_GetDibs.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_GetDibs.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +60,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				196018EA1B2CB99900B420B7 /* ParseUI.framework in Frameworks */,
+				B8A0BE882514FD1DF26E6DF9 /* Pods_GetDibs.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -66,6 +81,9 @@
 				1997BC5B1B2C7ABA00140A9B /* GetDibs */,
 				1997BC711B2C7ABA00140A9B /* GetDibsTests */,
 				1997BC5A1B2C7ABA00140A9B /* Products */,
+				4AB918BDF8FD9F6FFFC5C407 /* Pods */,
+				51CFFA30ADE92384E6ED67CE /* Frameworks */,
+				1960186C1B2CB69500B420B7 /* GetDibs-Bridging-Header.h */,
 			);
 			sourceTree = "<group>";
 		};
@@ -82,10 +100,13 @@
 			isa = PBXGroup;
 			children = (
 				1997BC5E1B2C7ABA00140A9B /* AppDelegate.swift */,
+				196018EB1B2DE0F300B420B7 /* Extensions.swift */,
 				1997BC601B2C7ABA00140A9B /* ViewController.swift */,
 				1997BC801B2C889700140A9B /* EquipmentCell.swift */,
 				1997BC7E1B2C7AEF00140A9B /* BLEDevice.swift */,
+				196018661B2CA7AE00B420B7 /* BLEPeripheral.swift */,
 				1997BC621B2C7ABA00140A9B /* Main.storyboard */,
+				196018681B2CABD200B420B7 /* AuthorizedEquipment.swift */,
 				1997BC651B2C7ABA00140A9B /* Images.xcassets */,
 				1997BC671B2C7ABA00140A9B /* LaunchScreen.xib */,
 				1997BC5C1B2C7ABA00140A9B /* Supporting Files */,
@@ -118,6 +139,24 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		4AB918BDF8FD9F6FFFC5C407 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				952FB4BA2490BE47A6E6528E /* Pods-GetDibs.debug.xcconfig */,
+				442861A008DF10675CAED3BC /* Pods-GetDibs.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
+		51CFFA30ADE92384E6ED67CE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				196018E91B2CB99900B420B7 /* ParseUI.framework */,
+				C79DA1FDF406CFA3592AC29D /* Pods_GetDibs.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -125,9 +164,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1997BC781B2C7ABA00140A9B /* Build configuration list for PBXNativeTarget "GetDibs" */;
 			buildPhases = (
+				DA446B60E5603B51F93DD0BB /* Check Pods Manifest.lock */,
 				1997BC551B2C7ABA00140A9B /* Sources */,
 				1997BC561B2C7ABA00140A9B /* Frameworks */,
 				1997BC571B2C7ABA00140A9B /* Resources */,
+				AC54C86AC456340379AF294F /* Embed Pods Frameworks */,
+				A26B74E79688152495B5FD8C /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -213,15 +255,66 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		A26B74E79688152495B5FD8C /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GetDibs/Pods-GetDibs-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		AC54C86AC456340379AF294F /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-GetDibs/Pods-GetDibs-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		DA446B60E5603B51F93DD0BB /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		1997BC551B2C7ABA00140A9B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				196018671B2CA7AE00B420B7 /* BLEPeripheral.swift in Sources */,
 				1997BC611B2C7ABA00140A9B /* ViewController.swift in Sources */,
 				1997BC7F1B2C7AEF00140A9B /* BLEDevice.swift in Sources */,
+				196018691B2CABD200B420B7 /* AuthorizedEquipment.swift in Sources */,
 				1997BC811B2C889700140A9B /* EquipmentCell.swift in Sources */,
 				1997BC5F1B2C7ABA00140A9B /* AppDelegate.swift in Sources */,
+				196018EC1B2DE0F300B420B7 /* Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -348,21 +441,36 @@
 		};
 		1997BC791B2C7ABA00140A9B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 952FB4BA2490BE47A6E6528E /* Pods-GetDibs.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = GetDibs/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "GetDibs-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		1997BC7A1B2C7ABA00140A9B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 442861A008DF10675CAED3BC /* Pods-GetDibs.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
 				INFOPLIST_FILE = GetDibs/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OBJC_BRIDGING_HEADER = "GetDibs-Bridging-Header.h";
 			};
 			name = Release;
 		};
@@ -419,6 +527,7 @@
 				1997BC7A1B2C7ABA00140A9B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1997BC7B1B2C7ABA00140A9B /* Build configuration list for PBXNativeTarget "GetDibsTests" */ = {
 			isa = XCConfigurationList;
@@ -427,6 +536,7 @@
 				1997BC7D1B2C7ABA00140A9B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
