@@ -76,6 +76,11 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     //MARK: Parse cloud work
     //MARK:
 
+    func logInViewController(logInController: PFLogInViewController, didLogInUser user: PFUser) {
+        logInController.dismissViewControllerAnimated(true, completion: nil)
+        queryAuthorizedEquipment();
+    }
+
     func queryAuthorizedEquipment()
     {
         AuthorizedEquipment.getAuthorizedMachines({ (machines, error) -> Void in
@@ -104,7 +109,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             login.delegate = self;
             self.authorizedMachines.removeAll(keepCapacity: true)
             presentViewController(login, animated: true, completion: { () -> Void in
-                self.queryAuthorizedEquipment()
+                ()
             })
         }
         else
@@ -114,6 +119,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        PFUser.logOut()
     }
 
     override func didReceiveMemoryWarning() {

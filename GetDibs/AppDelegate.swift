@@ -22,6 +22,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         AuthorizedEquipment.registerSubclass();
         
         Parse.setApplicationId(kAppID, clientKey: kClientKey);
+
+        application.registerUserNotificationSettings(UIUserNotificationSettings(forTypes: UIUserNotificationType.Sound |
+            UIUserNotificationType.Alert | UIUserNotificationType.Badge, categories: nil))
         
         return true
     }

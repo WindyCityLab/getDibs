@@ -204,6 +204,7 @@
 		1997BC511B2C7ABA00140A9B /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
+				LastSwiftUpdateCheck = 0700;
 				LastUpgradeCheck = 0630;
 				ORGANIZATIONNAME = "Windy City Lab";
 				TargetAttributes = {
