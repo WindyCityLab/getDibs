@@ -1,0 +1,6 @@
+framework module FBSDKCoreKit {
+  umbrella header "Pods-GetDibs-FBSDKCoreKit-umbrella.h"
+
+  export *
+  module * { export * }
+}
