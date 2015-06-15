@@ -1,0 +1,17 @@
+Participant RTC
+Participant Relay
+Equipment->Phone: Advertising Packet with Equipment ID
+Phone -> Parse: isEquipmentAuthorized?
+Parse -> Phone: isAuthorized
+User -> Phone: Enable Equipment
+Phone -> Equipment: Connect
+Equipment -> Phone: Connection Successful
+Phone -> Equipment: DateTime
+Equipment -> RTC: Update DateTime
+Phone -> Equipment: On/Off Command (MD5 hash)
+Equipment -> Equipment: Determine Command from Hash
+Equipment -> Relay: Turn On/Off
+Equipment -> Phone: Status
+Phone -> Parse: Log usage
+
+
