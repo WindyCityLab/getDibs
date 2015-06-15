@@ -14,7 +14,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     @IBOutlet weak var tableView: UITableView!
 
     var equipment : BLEDevice! = nil;
-    var authorizedMachines : [String:String] = [:]
+    var authorizedMachines : [String:AuthorizedEquipment] = [:]
 
     func connectionStateDidUpdate() {
         tableView.reloadData()
@@ -46,6 +46,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     @IBAction func refreshButtonTapped(sender: AnyObject) {
         queryAuthorizedEquipment()
     }
+
     //MARK:
     //MARK: Tableview delegates and datasource
     //MARK:
@@ -55,9 +56,19 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let item = equipment.peripheralsArray[indexPath.row]
         cell.peripheral = item
         cell.onOffSwitch.enabled = false;
+        if let machine = authorizedMachines["\(item.deviceID)"]
+        {
+            cell.nameLabel.text = machine.name;
+        }
+        else
+        {
+            cell.nameLabel.text = "";
+        }
+        cell.accessoryType = UITableViewCellAccessoryType.None
         if authorizedMachines["\(item.deviceID)"] != nil
         {
             cell.onOffSwitch.enabled = true;
+            cell.accessoryType = UITableViewCellAccessoryType.Checkmark
         }
         return cell
     }
@@ -91,7 +102,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             for machine in machines!
             {
                 let m = machine as! AuthorizedEquipment
-                self.authorizedMachines["<\(m.machineID)>"] = ""
+                self.authorizedMachines["<\(m.machineID)>"] = m
             }
             self.equipment = BLEDevice.sharedInstance;
             self.equipment.delegate = self;
@@ -124,6 +135,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "Get Dibs"
         NSNotificationCenter.defaultCenter().addObserverForName(kPushReceived, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
             self.queryAuthorizedEquipment()
         }

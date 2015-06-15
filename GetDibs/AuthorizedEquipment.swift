@@ -16,6 +16,7 @@ class AuthorizedEquipment: PFObject, PFSubclassing
 
     @NSManaged var user : PFUser;
     @NSManaged var machineID : String;
+    @NSManaged var name : String;
 
     class func getAuthorizedMachines(block: PFArrayResultBlock?)
     {

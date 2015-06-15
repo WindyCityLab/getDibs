@@ -15,6 +15,7 @@ class BLEPeripheral {
     var deviceID : NSData! = nil;
     var deviceName: String! = nil;
     var isOn:Bool = false;
+    var timeOfLastAdvertisement : NSDate! = nil;
     var isConnected:Bool = false;
 
 }

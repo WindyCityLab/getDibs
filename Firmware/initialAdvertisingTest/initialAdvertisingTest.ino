@@ -59,25 +59,17 @@ String timeAsString()
             automatically on startup)
 */
 /**************************************************************************/
-void advertise(bool isOn)
-{
-  ble.print("at+gapsetadvdata=");
-  ble.print("02-01-06-");
-  ble.println("11-06-E6-29-52-6E-EC-3A-7C-8F-E4-41-BD-88-3F-A8-E9-15");
-  ble.waitForOK();
-
-  ble.println("atz");
-  ble.waitForOK();
-
-}
 void setup(void)
 {
+  Serial.begin(115200);
+
 //  for (int i = 0; i < 512; i++)
 //    EEPROM.write(i, 0);
-  
+//  Serial.println("erased eeprom");
+//  while(1) {};
+
   pinMode(13,OUTPUT);
   
-  Serial.begin(115200);
   
 //  Serial.println(EEPROM.read(0),HEX);
 //  while (true) {};
@@ -90,19 +82,14 @@ void setup(void)
   }
   Serial.println( F("OK!") );
 
-  /* Perform a factory reset to make sure everything is in a known state */
-//  Serial.print(F("Performing a factory reset: "));
-//  if (! ble.factoryReset() ){
-//       error(F("Couldn't factory reset"));
-//  }
+  ble.println("at+gapdevname=TAZ5");
+  delay(100);
+  ble.waitForOK();
 
-//  advertise(false);
   updateManufactureData();
   
-//  ble.println("at+gapsetadvdata=02-01-06-03-FF-00-01-11-06-E6-29-52-6E-EC-3A-7C-8F-E4-41-BD-88-3F-A8-E9-15");
-//  ble.waitForOK();
   
-  ble.println("at+gapdevname=Catalyze Equipment");
+  ble.println("atz");
   ble.waitForOK();
   
   /* Disable command echo from Bluefruit */
@@ -119,7 +106,7 @@ void setup(void)
 void updateManufactureData()
 {
   ble.print("at+gapsetadvdata="); 
-  ble.print("02-01-06-11-06-E6-29-52-6E-EC-3A-7C-8F-E4-41-BD-88-3F-A8-E9-15-04-FF-00-01-");
+  ble.print("02-01-06-11-06-E6-29-52-6E-EC-3A-7C-8F-E4-41-BD-88-3F-A8-E9-15-04-FF-00-02-");
   if (isOnOffFromEEPROM())
   {
     digitalWrite(13,HIGH);

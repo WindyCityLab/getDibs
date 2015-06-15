@@ -26,6 +26,7 @@ protocol BLEDeviceDelegate
 class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
 {
 
+    let kScanCheckTime = 30.0;
     var commandToSend : NSData! = nil
     var centralNode : CBCentralManager! = nil
     var serviceUUID : CBUUID! = nil;
@@ -41,6 +42,7 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
             selectedPeripheral = peripherals[selectedPeripheralUUID];
         }
     }
+    var timer : NSTimer! = nil;
 
     var deviceName : String! = nil;
     var deviceID : NSData! = nil;
@@ -54,8 +56,37 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
 
     func begin()
     {
+        if self.timer == nil
+        {
+            self.timer = NSTimer.scheduledTimerWithTimeInterval(kScanCheckTime, target: self, selector: Selector("timerFired:"), userInfo: nil, repeats: true);
+        }
+
+        peripherals.removeAll(keepCapacity: true);
+        peripheralsArray.removeAll(keepCapacity: true);
+        
         serviceUUID = CBUUID(string: kServiceID);
         centralNode = CBCentralManager(delegate: self, queue: nil, options:["CBCentralManagerOptionRestoreIdentifierKey":kCatalyzeDeviceName]);
+    }
+
+    func timerFired(timer: NSTimer)
+    {
+        var keysToRemove : [String] = Array()
+        for (key,p) in peripherals
+        {
+            if p.timeOfLastAdvertisement.timeIntervalSinceNow < -kScanCheckTime
+            {
+                keysToRemove.append(key)
+            }
+        }
+        for key in keysToRemove
+        {
+            peripherals.removeValueForKey(key)
+        }
+        updatePeripheralsArray()
+        if keysToRemove.count > 0
+        {
+            self.delegate.connectionStateDidUpdate()
+        }
     }
 
     func refresh()
@@ -63,30 +94,12 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         self.delegate.connectionStateDidUpdate()
     }
 
-//    func sendCommand(command : String)
-//    {
-//        let data = command.dataUsingEncoding(NSUTF8StringEncoding)
-//        selectedPeripheral!.peripheral.writeValue(data, forCharacteristic: writeToPeripheral, type: CBCharacteristicWriteType.WithResponse)
-//    }
-
     func removeConnection(forPeripheral : BLEPeripheral)
     {
         forPeripheral.peripheral.setNotifyValue(false, forCharacteristic: notifyOnUpdate);
         forPeripheral.peripheral.setNotifyValue(false, forCharacteristic: writeToPeripheral);
         centralNode.cancelPeripheralConnection(forPeripheral.peripheral);
     }
-
-//    func toggleConnection(toPeripheral : BLEPeripheral)
-//    {
-//        if toPeripheral.isConnected
-//        {
-//            removeConnection(toPeripheral)
-//        }
-//        else
-//        {
-//            centralNode.connectPeripheral(toPeripheral.peripheral, options: nil);
-//        }
-//    }
 
     //MARK:
 
@@ -105,16 +118,9 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     }
 
     func peripheral(peripheral: CBPeripheral!, didWriteValueForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
-//        if sendingFirstHalf
-//        {
-//            println("didWriteValue (1 of 2)");
-//            sendingFirstHalf = false;
-//            peripheral.writeValue(commandToSend.subdataWithRange(NSMakeRange(16, 16)), forCharacteristic: writeToPeripheral, type: CBCharacteristicWriteType.WithResponse)
-//        }
-        println("didWriteValue (2 of 2)");
+        println("receiving data");
 
         removeConnection(peripherals[peripheral.identifier.UUIDString]!);
-//        centralNode.cancelPeripheralConnection(peripheral)
     }
 
     func peripheral(peripheral: CBPeripheral!, didDiscoverCharacteristicsForService service: CBService!, error: NSError!) {
@@ -140,14 +146,18 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     }
     //MARK:
 
-    func addPeripheralToSetOfPeripherals(peripheral : BLEPeripheral)
+    func updatePeripheralsArray()
     {
-        peripherals[peripheral.peripheral.identifier.UUIDString] = peripheral
         peripheralsArray.removeAll(keepCapacity: true)
         for (key, value) in peripherals
         {
             peripheralsArray.append(value)
         }
+    }
+    func addPeripheralToSetOfPeripherals(peripheral : BLEPeripheral)
+    {
+        peripherals[peripheral.peripheral.identifier.UUIDString] = peripheral
+        updatePeripheralsArray()
     }
 
     func centralManager(central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [NSObject : AnyObject]!, RSSI: NSNumber!)
@@ -158,7 +168,7 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         var p = BLEPeripheral();
         p.peripheral = peripheral;
         p.deviceName = advertisementData[kCBAdvDataLocalName] as? String;
-
+        p.timeOfLastAdvertisement = NSDate()
         p.deviceID = (advertisementData[kCBAdvDataManufacturerData] as? NSData)?.subdataWithRange(NSMakeRange(0, 2));
 
         var onOffData = (advertisementData[kCBAdvDataManufacturerData] as? NSData)!.subdataWithRange(NSMakeRange(2, 1))
@@ -180,7 +190,6 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         var md5Hash = actualCommand.MD5()
         println("sending: \(md5Hash)");
         self.commandToSend = md5Hash.dataUsingEncoding(NSUTF8StringEncoding)
-//        self.commandToSend = "012345678901234567890123456789".dataUsingEncoding(NSUTF8StringEncoding)
         centralNode.connectPeripheral(toPeripheral.peripheral, options: nil);
     }
 
@@ -196,19 +205,19 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         let p = peripherals[peripheral.identifier.UUIDString]!
         p.isConnected = false;
         delegate.connectionStateDidUpdate()
-        central.scanForPeripheralsWithServices([serviceUUID], options: nil);
+        central.scanForPeripheralsWithServices([serviceUUID], options: [CBCentralManagerScanOptionAllowDuplicatesKey:NSNumber(bool: true)]);
     }
 
     func centralManagerDidUpdateState(central: CBCentralManager!) {
         println("central manager did update state");
         switch central.state
         {
-        case CBCentralManagerState.PoweredOn:
-            println("Scanning for Peripherals with service id: \(serviceUUID)");
-            central.scanForPeripheralsWithServices([serviceUUID], options: nil)
+            case CBCentralManagerState.PoweredOn:
+                println("Scanning for Peripherals with service id: \(serviceUUID)");
+                central.scanForPeripheralsWithServices([serviceUUID], options: [CBCentralManagerScanOptionAllowDuplicatesKey:NSNumber(bool: true)]);
 
-        default:
-            ()
+            default:
+                ()
         }
     }
 }

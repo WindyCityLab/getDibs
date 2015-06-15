@@ -22,7 +22,7 @@ class EquipmentCell: UITableViewCell {
     {
         didSet
         {
-            nameLabel.text = peripheral.deviceName;
+//            nameLabel.text = peripheral.deviceName;
             codeLabel.text = "\(peripheral.deviceID)";
             onOffSwitch.on = peripheral.isOn;
         }
