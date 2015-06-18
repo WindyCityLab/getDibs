@@ -14,7 +14,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     @IBOutlet weak var tableView: UITableView!
 
     var equipment : BLEDevice! = nil;
-    var authorizedMachines : [String:AuthorizedEquipment] = [:]
+    var allEquipment : [String : Equipment] = [:]
+    var authorizedMachines : [String:Equipment] = [:]
 
     func connectionStateDidUpdate() {
         tableView.reloadData()
@@ -29,14 +30,15 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
         else
         {
-            let confirm = UIAlertController(title: "Please Confirm", message: "Do you want to turn \(peripheral.deviceName) on?", preferredStyle: UIAlertControllerStyle.Alert)
+            let e = allEquipment["\(peripheral.deviceID)"];
+            let confirm = UIAlertController(title: "Please Confirm", message: "Do you want to turn \(e!.name) on?", preferredStyle: UIAlertControllerStyle.Alert)
             let ok = UIAlertAction(title: "YES", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
                 self.equipment.send("X", toPeripheral: peripheral);
                 peripheral.isOn = true;
                 self.tableView.reloadData();
             })
             let cancel = UIAlertAction(title: "NO", style: UIAlertActionStyle.Default, handler: { (action) -> Void in
-                ()
+                self.tableView.reloadData()
             })
             confirm.addAction(cancel)
             confirm.addAction(ok)
@@ -56,14 +58,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let item = equipment.peripheralsArray[indexPath.row]
         cell.peripheral = item
         cell.onOffSwitch.enabled = false;
-        if let machine = authorizedMachines["\(item.deviceID)"]
-        {
-            cell.nameLabel.text = machine.name;
-        }
-        else
-        {
-            cell.nameLabel.text = "";
-        }
+        cell.nameLabel.text = allEquipment["\(item.deviceID)"]!.name;
         cell.accessoryType = UITableViewCellAccessoryType.None
         if authorizedMachines["\(item.deviceID)"] != nil
         {
@@ -97,18 +92,26 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
     func queryAuthorizedEquipment()
     {
-        AuthorizedEquipment.getAuthorizedMachines({ (machines, error) -> Void in
+        Equipment.getAllEquipment { (equipments, error) -> Void in
             self.authorizedMachines.removeAll(keepCapacity: true)
-            for machine in machines!
+            for equipment in equipments!
             {
-                let m = machine as! AuthorizedEquipment
-                self.authorizedMachines["<\(m.machineID)>"] = m
+                let e = equipment as! Equipment
+                self.allEquipment["<\(e.machineID)>"] = e;
             }
-            self.equipment = BLEDevice.sharedInstance;
-            self.equipment.delegate = self;
-            self.equipment.begin();
-            self.tableView.reloadData()
-        })
+            AuthorizedEquipment.getAuthorizedMachines({ (machines, error) -> Void in
+                self.authorizedMachines.removeAll(keepCapacity: true)
+                for machine in machines!
+                {
+                    let m = machine as! AuthorizedEquipment
+                    self.authorizedMachines["<\(m.equipment.machineID)>"] = m.equipment
+                }
+                self.equipment = BLEDevice.sharedInstance;
+                self.equipment.delegate = self;
+                self.equipment.begin();
+                self.tableView.reloadData()
+            })
+        }
     }
 
     //MARK:
@@ -139,7 +142,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         NSNotificationCenter.defaultCenter().addObserverForName(kPushReceived, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
             self.queryAuthorizedEquipment()
         }
-//        PFUser.logOut()
+        PFUser.logOut()
     }
 
     override func didReceiveMemoryWarning() {

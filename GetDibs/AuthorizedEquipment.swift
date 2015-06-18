@@ -15,13 +15,13 @@ class AuthorizedEquipment: PFObject, PFSubclassing
     }
 
     @NSManaged var user : PFUser;
-    @NSManaged var machineID : String;
-    @NSManaged var name : String;
+    @NSManaged var equipment : Equipment;
 
     class func getAuthorizedMachines(block: PFArrayResultBlock?)
     {
         let q = PFQuery(className: parseClassName());
         q.whereKey("user", equalTo: PFUser.currentUser()!)
+        q.includeKey("equipment");
 
         q.findObjectsInBackgroundWithBlock { (results, error) -> Void in
             block!(results,error);
