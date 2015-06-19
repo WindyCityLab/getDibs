@@ -48,6 +48,8 @@ void error(const __FlashStringHelper*err) {
   Serial.println(err);
   while (1);
 }
+//git test
+//addy git test 6/19/15
 
 String timeAsString()
 {
