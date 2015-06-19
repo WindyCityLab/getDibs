@@ -1,17 +1,20 @@
 Participant RTC
 Participant Relay
-Equipment->Phone: Advertising Packet with Equipment ID
+Equipment->Phone: Advertising Packet with Equipment ID & Status
 Phone -> Parse: isEquipmentAuthorized?
 Parse -> Phone: isAuthorized
+Phone -> Phone: update UI
 User -> Phone: Enable Equipment
-Phone -> Equipment: Connect
-Equipment -> Phone: Connection Successful
+Phone -> Equipment: BLE Connect
+Equipment -> Phone: BLE Connection Successful
 Phone -> Equipment: DateTime
 Equipment -> RTC: Update DateTime
-Phone -> Equipment: On/Off Command (MD5 hash)
-Equipment -> Equipment: Determine Command from Hash
+Phone -> Equipment: MD5 Hash to Authorize
+Equipment -> Equipment: Generate MD5 and Compare
+Equipment -> Phone: Autorized
+Phone -> Equipment: On/Off Command
 Equipment -> Relay: Turn On/Off
-Equipment -> Phone: Status
-Phone -> Parse: Log usage
-
+Phone -> Equipment: BLE Disconnect
+Equipment -> Advertising Packet with Equipment ID & Status
+Phone -> Parse: Update usage log
 
