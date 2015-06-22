@@ -22,7 +22,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let kClientKey = "j4peDjpdtO9MyhawlzyxRDNQxfJV6fhwGu4dAnzS"
 
         AuthorizedEquipment.registerSubclass();
-        
+        Equipment.registerSubclass();
+
         Parse.setApplicationId(kAppID, clientKey: kClientKey);
 
         if application.respondsToSelector("registerUserNotificationSettings:") {

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		190E894A1B33314E008DB0AC /* Equipment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 190E89491B33314E008DB0AC /* Equipment.swift */; };
 		196018671B2CA7AE00B420B7 /* BLEPeripheral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 196018661B2CA7AE00B420B7 /* BLEPeripheral.swift */; };
 		196018691B2CABD200B420B7 /* AuthorizedEquipment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 196018681B2CABD200B420B7 /* AuthorizedEquipment.swift */; };
 		196018EA1B2CB99900B420B7 /* ParseUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 196018E91B2CB99900B420B7 /* ParseUI.framework */; };
@@ -33,6 +34,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		190E89491B33314E008DB0AC /* Equipment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Equipment.swift; sourceTree = "<group>"; };
 		196018661B2CA7AE00B420B7 /* BLEPeripheral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BLEPeripheral.swift; sourceTree = "<group>"; };
 		196018681B2CABD200B420B7 /* AuthorizedEquipment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthorizedEquipment.swift; sourceTree = "<group>"; };
 		1960186C1B2CB69500B420B7 /* GetDibs-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "GetDibs-Bridging-Header.h"; sourceTree = "<group>"; };
@@ -107,6 +109,7 @@
 				196018661B2CA7AE00B420B7 /* BLEPeripheral.swift */,
 				1997BC621B2C7ABA00140A9B /* Main.storyboard */,
 				196018681B2CABD200B420B7 /* AuthorizedEquipment.swift */,
+				190E89491B33314E008DB0AC /* Equipment.swift */,
 				1997BC651B2C7ABA00140A9B /* Images.xcassets */,
 				1997BC671B2C7ABA00140A9B /* LaunchScreen.xib */,
 				1997BC5C1B2C7ABA00140A9B /* Supporting Files */,
@@ -311,6 +314,7 @@
 			files = (
 				196018671B2CA7AE00B420B7 /* BLEPeripheral.swift in Sources */,
 				1997BC611B2C7ABA00140A9B /* ViewController.swift in Sources */,
+				190E894A1B33314E008DB0AC /* Equipment.swift in Sources */,
 				1997BC7F1B2C7AEF00140A9B /* BLEDevice.swift in Sources */,
 				196018691B2CABD200B420B7 /* AuthorizedEquipment.swift in Sources */,
 				1997BC811B2C889700140A9B /* EquipmentCell.swift in Sources */,
