@@ -84,7 +84,7 @@ void setup(void)
   }
   Serial.println( F("OK!") );
 
-  ble.println("at+gapdevname=TAZ5");
+  ble.println("at+gapdevname=ZER0");
   delay(100);
   ble.waitForOK();
 
@@ -198,3 +198,4 @@ bool isOnOffFromEEPROM()
 {
   return EEPROM.read(0);
 }
+
