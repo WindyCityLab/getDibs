@@ -30,6 +30,10 @@
 #define VERBOSE_MODE                    true  // Enables full debug output is 'true'
 
 #define MD5_HASH_SALT "6A2041DB-5942-44D7-844C-8C17D7926107"
+#define PACKET "02-01-06-11-06-E6-29-52-6E-EC-3A-7C-8F-E4-41-BD-88-3F-A8-E9-15-04-FF-"
+#define DEVID "00-02"
+#define onByte "01"
+#define offByte "00" 
 
 /* Create the bluefruit object, either software serial... */
 
@@ -101,23 +105,25 @@ void setup(void)
   /* Print Bluefruit information */
   ble.info();
 
- // ble.verbose(false);  // debug info is a little annoying after this point!
+ ble.verbose(false);  // debug info is a little annoying after this point!
   
 }
 
 void updateManufactureData()
 {
   ble.print("at+gapsetadvdata="); 
-  ble.print("02-01-06-11-06-E6-29-52-6E-EC-3A-7C-8F-E4-41-BD-88-3F-A8-E9-15-04-FF-00-02-");
+  ble.print(PACKET);
+  ble.print(DEVID);
+  ble.print("-");
   if (isOnOffFromEEPROM())
   {
     digitalWrite(13,HIGH);
-    ble.println("01");
+    ble.println(onByte);
   }
   else
   {
     digitalWrite(13,LOW);
-    ble.println("00");
+    ble.println(offByte);
   }
   ble.waitForOK();
   
