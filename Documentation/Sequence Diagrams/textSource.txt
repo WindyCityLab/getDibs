@@ -11,7 +11,7 @@ Phone -> Equipment: DateTime
 Equipment -> RTC: Update DateTime
 Phone -> Equipment: MD5 Hash to Authorize
 Equipment -> Equipment: Generate MD5 and Compare
-Equipment -> Phone: Autorized
+Equipment -> Phone: Authorized
 Phone -> Equipment: On/Off Command
 Equipment -> Relay: Turn On/Off
 Phone -> Equipment: BLE Disconnect
