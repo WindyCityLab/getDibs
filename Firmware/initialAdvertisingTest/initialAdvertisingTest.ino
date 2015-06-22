@@ -84,8 +84,8 @@ void setup(void)
   }
   Serial.println( F("OK!") );
 
-  ble.println("at+gapdevname=ZER0");
-  delay(100);
+ ble.println("at+gapdevname=GLD"); //obsolete, now pulls from parse
+ delay(100);
   ble.waitForOK();
 
   updateManufactureData();
@@ -101,7 +101,7 @@ void setup(void)
   /* Print Bluefruit information */
   ble.info();
 
-  ble.verbose(false);  // debug info is a little annoying after this point!
+ // ble.verbose(false);  // debug info is a little annoying after this point!
   
 }
 
@@ -121,7 +121,7 @@ void updateManufactureData()
   }
   ble.waitForOK();
   
-  ble.println("atz");
+  ble.println("ATZ");
   ble.waitForOK();
 }
 
