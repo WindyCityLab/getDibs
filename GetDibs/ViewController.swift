@@ -142,7 +142,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         NSNotificationCenter.defaultCenter().addObserverForName(kPushReceived, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
             self.queryAuthorizedEquipment()
         }
-        PFUser.logOut()
+    //    PFUser.logOut()
     }
 
     override func didReceiveMemoryWarning() {

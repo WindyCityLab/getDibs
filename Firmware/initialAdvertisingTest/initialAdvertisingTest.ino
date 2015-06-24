@@ -1,3 +1,7 @@
+#include <Wire.h>
+
+#include <RTClib.h>
+
 #include <EEPROM.h>
 #include <string.h>
 #include <Arduino.h>
@@ -27,7 +31,7 @@
 
 // Sketch Settings
 #define BUFSIZE                         128   // Read buffer size for incoming data
-#define VERBOSE_MODE                    true  // Enables full debug output is 'true'
+#define VERBOSE_MODE                    false  // Enables full debug output is 'true'
 
 #define MD5_HASH_SALT "6A2041DB-5942-44D7-844C-8C17D7926107"
 #define PACKET "02-01-06-11-06-E6-29-52-6E-EC-3A-7C-8F-E4-41-BD-88-3F-A8-E9-15-04-FF-"
@@ -52,36 +56,28 @@ void error(const __FlashStringHelper*err) {
   Serial.println(err);
   while (1);
 }
-//git test
-//addy git test 6/19/15
 
-String timeAsString()
-{
-  return "2015-06-14-10-03";
-}
-/**************************************************************************/
-/*!
-    @brief  Sets up the HW an the BLE module (this function is called
-            automatically on startup)
-*/
-/**************************************************************************/
-void setup(void)
+
+RTC_DS1307 rtc;
+
+void setup()
 {
   Serial.begin(115200);
-
-//  for (int i = 0; i < 512; i++)
-//    EEPROM.write(i, 0);
-//  Serial.println("erased eeprom");
-//  while(1) {};
-
+#ifdef AVR
+  Wire.begin();
+#else
+  Wire1.begin(); // Shield I2C pins connect to alt I2C bus on Arduino Due
+#endif
+  rtc.begin();
   pinMode(13,OUTPUT);
+  if (! rtc.isrunning()) {
+    Serial.println("RTC is NOT running!");
+  }
   
-  
-//  Serial.println(EEPROM.read(0),HEX);
-//  while (true) {};
+
 //  
   /* Initialise the module */
-  Serial.print(F("Initialising the Bluefruit LE module: "));
+  Serial.println(F("Initialising the Bluefruit LE module: "));
   if ( !ble.begin(VERBOSE_MODE) )
   {
     error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
@@ -89,24 +85,18 @@ void setup(void)
   Serial.println( F("OK!") );
 
  ble.println("at+gapdevname=GLD"); //obsolete, now pulls from parse
- delay(100);
-  ble.waitForOK();
+ delay(50);
+ // ble.waitForOK();
 
   updateManufactureData();
   
   
-  ble.println("atz");
-  ble.waitForOK();
-  
-  /* Disable command echo from Bluefruit */
-  //ble.echo(false);
-
-  Serial.println("Requesting Bluefruit info:");
-  /* Print Bluefruit information */
-  ble.info();
+ 
 
  ble.verbose(false);  // debug info is a little annoying after this point!
-  
+ 
+ MD5input();
+ 
 }
 
 void updateManufactureData()
@@ -119,11 +109,13 @@ void updateManufactureData()
   {
     digitalWrite(13,HIGH);
     ble.println(onByte);
+    Serial.println("Machine is on");
   }
   else
   {
     digitalWrite(13,LOW);
     ble.println(offByte);
+    Serial.println("Machine is off");
   }
   ble.waitForOK();
   
@@ -131,43 +123,41 @@ void updateManufactureData()
   ble.waitForOK();
 }
 
-byte getCommandFromMD5Hash(char hashReceived[])
+bool getAuthFromMD5Hash(char hashReceived[])
 {
-  char testString[]="X6A2041DB-5942-44D7-844C-8C17D79261072015-06-14-10-03";
+  char testString[]="6A2041DB-5942-44D7-844C-8C17D79261072015-06-14-10-03";
  
   unsigned char* hash=MD5::make_hash(testString);
   char *md5str = MD5::make_digest(hash, 10);
   free(hash);
- // Serial.println(md5str);
+  Serial.print("Local Hash:");
+  Serial.println(md5str);
   if (strcmp(hashReceived,md5str) == 0)
   {
-    return 'X';
+    Serial.println("MATCH!");
+    return true;
   }
   else
   {
-    return '-';
+    return false;
   }
   free(md5str);
 }
 void loop(void)
 {
-//  char testString[]="X6A2041DB-5942-44D7-844C-8C17D79261072015-06-14-10-03";
-//  getCommandFromMD5Hash(testString);
-//  
-//  byte command[] = "02129bb861061d1a052c592e2dc6b383";
-//  Serial.println(sizeof(command));
-//  // Echo received data
+bool authstate;
+  
   while (! ble.isConnected()) {
     if (connectionState)
     {
-      Serial.println("disconnected");
+      Serial.println("STATUS: No device connected");
       connectionState = false;
     }
   };
   if (!connectionState)
   {
     connectionState = true;
-    Serial.println("connected");
+    Serial.println("STATUS: device connected");
   }
   
   if (connectionState)
@@ -178,19 +168,32 @@ void loop(void)
     if (strcmp(ble.buffer, "OK") == 0) {
       return;
     } 
-    
-    char command = getCommandFromMD5Hash(ble.buffer);
-    Serial.println(command);
-    
-    if (command == 'X')
-    {
-      rememberOnOff(true);
-    }
-    else
-    {
-      rememberOnOff(false);
-    }
+    Serial.print("Remote Hash:");
     Serial.println(ble.buffer);
+    if (! authstate){
+    authstate = false;
+    authstate = getAuthFromMD5Hash(ble.buffer);
+    }
+    if (authstate)
+    {
+      Serial.println("User authorized");
+    }
+    else {
+      Serial.println("User NOT authorized, disconnecting");
+      ble.println("AT+GAPDISCONNECT");
+    }
+    if (authstate) //put actual command code here
+    {
+      ble.println("AT+BLEUARTRX");
+      ble.readline(100);  // 100ms timeout
+      if (strcmp(ble.buffer, "OK") == 0) {
+        return;
+    } 
+    Serial.print("Numeral Command: ");
+    Serial.println(ble.buffer);
+    
+    }
+    
 //    ble.waitForOK();
     updateManufactureData();
   }
@@ -204,4 +207,12 @@ bool isOnOffFromEEPROM()
 {
   return EEPROM.read(0);
 }
+void MD5input()
+{
+  DateTime MD5Time = rtc.now();
+  
+  Serial.println("Current time: " + String(MD5Time.hour()) + ":" + String(MD5Time.minute()));
+  
+}
+
 
