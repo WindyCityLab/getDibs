@@ -125,7 +125,7 @@ void updateManufactureData()
 
 bool getAuthFromMD5Hash(char hashReceived[])
 {
-  char testString[]="6A2041DB-5942-44D7-844C-8C17D79261072015-06-14-10-03";
+  char testString[]="6A2041DB-5942-44D7-844C-8C17D7926107";
  
   unsigned char* hash=MD5::make_hash(testString);
   char *md5str = MD5::make_digest(hash, 10);

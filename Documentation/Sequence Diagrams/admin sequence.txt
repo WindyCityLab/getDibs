@@ -1,25 +1,20 @@
 Title Standard Admin Scenario
-Participant RTC
-Participant Relay
 Participant Equipment
 Participant Phone
 Participant User
 Phone -> Parse: Login, is User Admin?
 Parse -> Phone: Is Admin
 Phone -> Phone: UI Setting: Admin
+Phone -> Parse: Change parse settings (users, equipment name, etc.)
 Equipment->Phone: Advertising Packet with Equipment ID & Status, etc.
 Phone -> Phone: update UI
 User -> Phone: Select GLD
 User -> Phone: Activate/Configure
-Phone -> Equipment: BLE Connect
+Phone -> Equipment: BLE Connect (with timeout)
 Equipment -> Phone: BLE Connection Successful
-Phone -> Equipment: DateTime
-Equipment -> RTC: Update DateTime
-Phone -> Equipment: MD5 Hash to Authorize
-Equipment -> Equipment: Generate MD5 and Compare
+Phone -> Equipment: See authorization sequence
 Equipment -> Phone: Authorized (Admin)
-Phone -> Equipment: Configure/Activate
-Equipment -> Relay: Power On/Off
+Phone -> Equipment: Configure/Activate (Device ID, etc.)
 Phone -> Equipment: BLE Disconnect
 Equipment -> Phone: Advertising Packet with Equipment ID & Status, etc.
 Phone -> Parse: Update usage log

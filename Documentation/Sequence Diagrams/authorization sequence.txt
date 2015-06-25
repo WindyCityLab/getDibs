@@ -1,0 +1,21 @@
+Title Authorization
+Participant RTC
+Equipment->Phone: Advertising Packet with Equipment ID & Status
+Participant User
+Phone -> Parse: isEquipmentAuthorized?
+Parse -> Phone: isAuthorized
+Phone -> Phone: update UI
+User -> Phone: Enable Equipment/Other feature
+Phone -> Equipment: BLE Connect
+Equipment -> Phone: BLE Connection Successful
+Phone -> Equipment: DateTime
+Equipment -> RTC: Update DateTime on RTC
+RTC -> Equipment: Append UUID with DateTime = MD5 Input
+Equipment -> Equipment: Make MD5 Hash
+Phone -> Phone: Make MD5 Hash
+Phone -> Equipment: Send MD5 Hash
+Equipment -> Equipment: Compare MD5 Hashes made with same UUID and same general time
+Equipment -> Equipment: Match? Yes = Authorized, No = Force disconnect
+Equipment -> Phone: Authorized
+Phone -> Equipment: Send plaintext command
+Equipment -> Equipment: Execute command, disconnect
