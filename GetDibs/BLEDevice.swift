@@ -25,9 +25,11 @@ protocol BLEDeviceDelegate
 
 class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
 {
+    var justAuthorized = true;
 
     let kScanCheckTime = 30.0;
-    var commandToSend : NSData! = nil
+    var hashtoSend : NSData! = nil
+    var commandtoSend : NSData! = nil
     var centralNode : CBCentralManager! = nil
     var serviceUUID : CBUUID! = nil;
     var peripherals : [String:BLEPeripheral] = [:]
@@ -120,7 +122,25 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     func peripheral(peripheral: CBPeripheral!, didWriteValueForCharacteristic characteristic: CBCharacteristic!, error: NSError!) {
         println("receiving data");
 
-        removeConnection(peripherals[peripheral.identifier.UUIDString]!);
+        if error !=  nil
+        {
+            justAuthorized = true;
+            removeConnection(peripherals[peripheral.identifier.UUIDString]!);
+            return;
+        }
+        
+        if justAuthorized
+        {
+            println("sending the following: \(commandtoSend) of size: \(commandtoSend.length)");
+            // send on or off command
+            peripheral.writeValue(commandtoSend, forCharacteristic: writeToPeripheral, type: CBCharacteristicWriteType.WithResponse)
+            justAuthorized = false
+        }
+        else
+        {
+            removeConnection(peripherals[peripheral.identifier.UUIDString]!);
+            justAuthorized = true;
+        }
     }
 
     func peripheral(peripheral: CBPeripheral!, didDiscoverCharacteristicsForService service: CBService!, error: NSError!) {
@@ -136,8 +156,11 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
                 case CBCharacteristicProperties.Write :
                     writeToPeripheral = characteristic as! CBCharacteristic
                     println("added write characteristic for service \(service.UUID)");
-                    println("sending the following: \(commandToSend) of size: \(commandToSend.length)");
-                    peripheral.writeValue(commandToSend, forCharacteristic: writeToPeripheral, type: CBCharacteristicWriteType.WithResponse)
+                    println("sending the following: \(hashtoSend) of size: \(hashtoSend.length)");
+                    
+                    peripheral.writeValue(hashtoSend, forCharacteristic: writeToPeripheral, type: CBCharacteristicWriteType.WithResponse)
+                    
+                  //  peripheral.writeValue(commandtoSend, forCharacteristic: writeToPeripheral, type: CBCharacteristicWriteType.WithResponse)
 
                 default :
                     ()
@@ -162,8 +185,8 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
 
     func centralManager(central: CBCentralManager!, didDiscoverPeripheral peripheral: CBPeripheral!, advertisementData: [NSObject : AnyObject]!, RSSI: NSNumber!)
     {
-        println("did discover peripheral \(peripheral.identifier)");
-        println("advertisement data: \(advertisementData)");
+        //println("did discover peripheral \(peripheral.identifier)");
+        //println("advertisement data: \(advertisementData)");
 
         var p = BLEPeripheral();
         p.peripheral = peripheral;
@@ -172,7 +195,7 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         p.deviceID = (advertisementData[kCBAdvDataManufacturerData] as? NSData)?.subdataWithRange(NSMakeRange(0, 2));
 
         var onOffData = (advertisementData[kCBAdvDataManufacturerData] as? NSData)!.subdataWithRange(NSMakeRange(2, 1))
-        println("\(onOffData)")
+        //println("\(onOffData)")
         p.isOn = ("\(onOffData)" == "<01>");
         addPeripheralToSetOfPeripherals(p)
 
@@ -182,15 +205,23 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
 
     func timeAsString() -> String
     {
-        return "2015-06-14-10-03"
+        var todaysDate:NSDate = NSDate()
+        var dateFormatter:NSDateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "HHmm"
+        var DateInFormat:String = dateFormatter.stringFromDate(todaysDate)
+        println(DateInFormat)
+        return DateInFormat
     }
     func send(command : String, toPeripheral : BLEPeripheral)
     {
-        var actualCommand = kMD5HashSalt
-        var md5Hash = actualCommand.MD5()
+        var actualHash = kMD5HashSalt + timeAsString()
+        println(actualHash)
+        var md5Hash = actualHash.MD5()
         println("sending: \(md5Hash)");
-        self.commandToSend = md5Hash.dataUsingEncoding(NSUTF8StringEncoding)
+        self.hashtoSend = md5Hash.dataUsingEncoding(NSUTF8StringEncoding)
+        self.commandtoSend = "1".dataUsingEncoding(NSUTF8StringEncoding)
         centralNode.connectPeripheral(toPeripheral.peripheral, options: nil);
+    
     }
 
     func centralManager(central: CBCentralManager!, didConnectPeripheral peripheral: CBPeripheral!) {

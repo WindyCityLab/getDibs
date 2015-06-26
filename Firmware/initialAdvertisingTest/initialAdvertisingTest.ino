@@ -21,6 +21,8 @@
 #define BLUEFRUIT_UART_CTS_PIN          11   // Required for software serial!
 #define BLUEFRUIT_UART_RTS_PIN          -1   // Optional, set to -1 if unused
 
+#define ARRAY_LENGTH 41
+
 // If you are using Hardware Serial
 // The following macros declare the Serial port you are using. Uncomment this
 // line if you are connecting the BLE to Leonardo/Micro or Flora
@@ -48,7 +50,7 @@ Adafruit_BluefruitLE_UART ble(bluefruitSS, BLUEFRUIT_UART_MODE_PIN,
 
 bool connectionState = true;
 #define COMMAND_BUFFER_SIZE 32
-
+bool authstate = false;
 char commandBuffer[COMMAND_BUFFER_SIZE];
 
 // A small helper
@@ -95,7 +97,7 @@ void setup()
 
  ble.verbose(false);  // debug info is a little annoying after this point!
  
- MD5input();
+
  
 }
 
@@ -125,9 +127,10 @@ void updateManufactureData()
 
 bool getAuthFromMD5Hash(char hashReceived[])
 {
-  char testString[]="6A2041DB-5942-44D7-844C-8C17D7926107";
- 
-  unsigned char* hash=MD5::make_hash(testString);
+  char resultArray[ARRAY_LENGTH];
+  MD5input().toCharArray(resultArray,ARRAY_LENGTH);
+ // Serial.println(resultArray);
+  unsigned char* hash = MD5::make_hash(resultArray);
   char *md5str = MD5::make_digest(hash, 10);
   free(hash);
   Serial.print("Local Hash:");
@@ -145,35 +148,48 @@ bool getAuthFromMD5Hash(char hashReceived[])
 }
 void loop(void)
 {
-bool authstate;
+//bool authstate = true;
   
   while (! ble.isConnected()) {
     if (connectionState)
     {
       Serial.println("STATUS: No device connected");
       connectionState = false;
-    }
+      authstate = false;
+    } 
   };
   if (!connectionState)
   {
     connectionState = true;
     Serial.println("STATUS: device connected");
+    authstate = false;
   }
   
   if (connectionState)
   {
+    if (!authstate)
+    {
+    Serial.println();  
+    Serial.print("Initial BUFFER CONTENTS:");
+    Serial.print(ble.buffer);
+    Serial.println();
     // Check for incoming characters from Bluefruit
     ble.println("AT+BLEUARTRX");
     ble.readline(100);  // 100ms timeout
-    if (strcmp(ble.buffer, "OK") == 0) {
-      return;
+    //Serial.println();  
+    //Serial.print("BUFFER CONTENTS:");
+    //Serial.print(ble.buffer);
+    //Serial.println();
+    while (strcmp(ble.buffer, "OK") == 0) {
+      ble.println("AT+BLEUARTRX");
+      ble.readline(100);
+    // return;
     } 
     Serial.print("Remote Hash:");
     Serial.println(ble.buffer);
-    if (! authstate){
-    authstate = false;
+    
     authstate = getAuthFromMD5Hash(ble.buffer);
-    }
+    
     if (authstate)
     {
       Serial.println("User authorized");
@@ -182,22 +198,40 @@ bool authstate;
       Serial.println("User NOT authorized, disconnecting");
       ble.println("AT+GAPDISCONNECT");
     }
-    if (authstate) //put actual command code here
-    {
-      ble.println("AT+BLEUARTRX");
-      ble.readline(100);  // 100ms timeout
-      if (strcmp(ble.buffer, "OK") == 0) {
-        return;
-    } 
-    Serial.print("Numeral Command: ");
-    Serial.println(ble.buffer);
-    
     }
+        if (authstate) //put actual command code here
+        {
+          
+          ble.println("AT+BLEUARTRX");
+          ble.readline(100);  // 100ms timeout
+          while (strcmp(ble.buffer, "OK") == 0) {
+            Serial.println("Nothing in command buffer");
+            //ble.println("AT+GAPDISCONNECT");
+            ble.println("AT+BLEUARTRX");
+            ble.readline(100);
+            //connectionState = false;
+           // delay(300);
+            //return;
+            } 
+          String commandString = ble.buffer;
+          Serial.print("Numeral Command: ");
+          Serial.println(commandString);
+          if (commandString == "1")
+          {
+            rememberOnOff(true);
+            Serial.println("Toggling!");
+          }
+          else
+          {
+            rememberOnOff(false);
+          }
+        }
     
 //    ble.waitForOK();
     updateManufactureData();
   }
-}
+ }
+
 
 void rememberOnOff(bool isOn)
 {
@@ -207,11 +241,26 @@ bool isOnOffFromEEPROM()
 {
   return EEPROM.read(0);
 }
-void MD5input()
+String MD5input()
 {
   DateTime MD5Time = rtc.now();
-  
-  Serial.println("Current time: " + String(MD5Time.hour()) + ":" + String(MD5Time.minute()));
+  char testString[] = "6A2041DB-5942-44D7-844C-8C17D7926107";
+  int ddhour = MD5Time.hour();
+  String ddminstring = String(MD5Time.minute());
+  String ddhourstring = String(MD5Time.hour());
+  int ddmin = MD5Time.minute();
+  if (ddhour < 10)
+  {
+    ddhourstring = ("0" + String(ddhour));
+  }
+  if (ddmin < 10)
+  {
+    ddminstring = ("0" + String(ddmin));
+  }
+  Serial.println("Current time: " + ddhourstring + ":" + ddminstring);
+  String resultString = String(testString + ddhourstring + ddminstring);
+  Serial.println(resultString);
+  return resultString;
   
 }
 
