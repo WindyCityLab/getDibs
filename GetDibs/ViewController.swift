@@ -15,7 +15,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
     var equipment : BLEDevice! = nil;
     var allEquipment : [String : Equipment] = [:]
-    var authorizedMachines : [String:Equipment] = [:]
+    var authorizedEquipment : [String:Equipment] = [:]
 
     func connectionStateDidUpdate() {
         tableView.reloadData()
@@ -25,7 +25,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         if peripheral.isOn
         {
             peripheral.isOn = false;
-            self.equipment.send("O", toPeripheral: peripheral);
+            self.equipment.send("0", toPeripheral: peripheral);
             self.tableView.reloadData()
         }
         else
@@ -33,7 +33,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             let e = allEquipment["\(peripheral.deviceID)"];
             let confirm = UIAlertController(title: "Please Confirm", message: "Do you want to turn \(e!.name) on?", preferredStyle: UIAlertControllerStyle.Alert)
             let ok = UIAlertAction(title: "YES", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
-                self.equipment.send("X", toPeripheral: peripheral);
+                self.equipment.send("1", toPeripheral: peripheral);
                 peripheral.isOn = true;
                 self.tableView.reloadData();
             })
@@ -58,9 +58,17 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         let item = equipment.peripheralsArray[indexPath.row]
         cell.peripheral = item
         cell.onOffSwitch.enabled = false;
-        cell.nameLabel.text = allEquipment["\(item.deviceID)"]!.name;
+        if let equipment = allEquipment["\(item.deviceID)"]
+        {
+            cell.nameLabel.text = equipment.name;
+        }
+        else
+        {
+            cell.nameLabel.text = "Not yet in Parse";
+        }
         cell.accessoryType = UITableViewCellAccessoryType.None
-        if authorizedMachines["\(item.deviceID)"] != nil
+        cell.onOffSwitch.enabled = false;
+        if authorizedEquipment["\(item.deviceID)"] != nil
         {
             cell.onOffSwitch.enabled = true;
             cell.accessoryType = UITableViewCellAccessoryType.Checkmark
@@ -77,8 +85,25 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
+        
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
-//        equipment.toggleConnection(equipment.peripheralsArray[indexPath.row])
+        
+        let item = equipment.peripheralsArray[indexPath.row];
+        
+        let alert = UIAlertController(title: "Edit Equipment ID", message: "Change to any 4 digit number", preferredStyle: .Alert)
+        alert.addTextFieldWithConfigurationHandler { (textField) -> Void in
+            textField.placeholder = "XXXX";
+        }
+        let cancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) { (action) -> Void in
+            ()
+        }
+        let submit = UIAlertAction(title: "Change", style: UIAlertActionStyle.Destructive) { (action) -> Void in
+            let textField = alert.textFields?.first as! UITextField
+            self.equipment.send("2\(textField.text)", toPeripheral: item)
+        }
+        alert.addAction(cancel);
+        alert.addAction(submit);
+        presentViewController(alert, animated: true, completion: nil);
     }
 
     //MARK:
@@ -93,18 +118,18 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     func queryAuthorizedEquipment()
     {
         Equipment.getAllEquipment { (equipments, error) -> Void in
-            self.authorizedMachines.removeAll(keepCapacity: true)
+            self.allEquipment.removeAll(keepCapacity: true)
             for equipment in equipments!
             {
                 let e = equipment as! Equipment
                 self.allEquipment["<\(e.machineID)>"] = e;
             }
             AuthorizedEquipment.getAuthorizedMachines({ (machines, error) -> Void in
-                self.authorizedMachines.removeAll(keepCapacity: true)
+                self.authorizedEquipment.removeAll(keepCapacity: true)
                 for machine in machines!
                 {
                     let m = machine as! AuthorizedEquipment
-                    self.authorizedMachines["<\(m.equipment.machineID)>"] = m.equipment
+                    self.authorizedEquipment["<\(m.equipment.machineID)>"] = m.equipment
                 }
                 self.equipment = BLEDevice.sharedInstance;
                 self.equipment.delegate = self;
@@ -126,7 +151,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         {
             let login = PFLogInViewController()
             login.delegate = self;
-            self.authorizedMachines.removeAll(keepCapacity: true)
+            self.authorizedEquipment.removeAll(keepCapacity: true)
             presentViewController(login, animated: true, completion: { () -> Void in
                 ()
             })
@@ -138,6 +163,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         title = "Get Dibs"
         NSNotificationCenter.defaultCenter().addObserverForName(kPushReceived, object: nil, queue: NSOperationQueue.mainQueue()) { (notification) -> Void in
             self.queryAuthorizedEquipment()

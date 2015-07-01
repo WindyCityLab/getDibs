@@ -219,7 +219,7 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         var md5Hash = actualHash.MD5()
         println("sending: \(md5Hash)");
         self.hashtoSend = md5Hash.dataUsingEncoding(NSUTF8StringEncoding)
-        self.commandtoSend = "1".dataUsingEncoding(NSUTF8StringEncoding)
+        self.commandtoSend = command.dataUsingEncoding(NSUTF8StringEncoding)
         centralNode.connectPeripheral(toPeripheral.peripheral, options: nil);
     
     }

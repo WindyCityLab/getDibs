@@ -43,7 +43,6 @@
 		1DC68AB9932A696C904E4A0A /* FBSDKGraphErrorRecoveryProcessor.m in Sources */ = {isa = PBXBuildFile; fileRef = 244E0D9C6C4A319CAF38970E /* FBSDKGraphErrorRecoveryProcessor.m */; };
 		1DDB8DD85F74967E92829AA9 /* PFUser.h in Headers */ = {isa = PBXBuildFile; fileRef = 907C470CB1501656967D0BD8 /* PFUser.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1FCDD5182FB033AA02EDF753 /* FBSDKAppEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 852B6B6184014111CD9A7BC3 /* FBSDKAppEvents.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		1FD18DB39F781B58CB781953 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 557167EDE9ED217425010524 /* Bolts.framework */; };
 		20AED8D582264471222559D3 /* BFAppLinkReturnToRefererView.m in Sources */ = {isa = PBXBuildFile; fileRef = B5D7A04A0FF9231A1ABDBC46 /* BFAppLinkReturnToRefererView.m */; settings = {COMPILER_FLAGS = "-DOS_OBJECT_USE_OBJC=0"; }; };
 		229293FB0D2EA8C88D81B8DB /* FBSDKLoginKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2434EE2A72E1C98EF493D65 /* FBSDKLoginKit.framework */; };
 		237B6FA5586DC035C399F05F /* FBSDKAppEventsDeviceInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 331FC246072C9ED45FEAE3D4 /* FBSDKAppEventsDeviceInfo.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -222,7 +221,6 @@
 		BDCEF85AC069E2BCBABAA05D /* CFNetwork.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1AF85190B7BA83A48A6CEC93 /* CFNetwork.framework */; };
 		BE5AA31DC385612C338C4B18 /* BFAppLinkReturnToRefererView_Internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 059A6099D7164FD65ADF3B13 /* BFAppLinkReturnToRefererView_Internal.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BE9A34B3556BB6468D7E15FA /* Empty.m in Sources */ = {isa = PBXBuildFile; fileRef = 46FDD1270745642E6B2C0B3B /* Empty.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		C0C175C2552A54816C9162B4 /* Bolts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 557167EDE9ED217425010524 /* Bolts.framework */; };
 		C192AFE0C6CAFC17F083915F /* FBSDKPaymentObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 9F8988953DFCF167E603DBDF /* FBSDKPaymentObserver.m */; };
 		C31EB5D24B893A49DEA305F7 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D457E6163FABB5E882CE759D /* Foundation.framework */; };
 		C3B9E04DDF8CC3AF34A0278D /* FBSDKBridgeAPIProtocolWebV2.h in Headers */ = {isa = PBXBuildFile; fileRef = 51A5616621970DE5A6788910 /* FBSDKBridgeAPIProtocolWebV2.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -757,8 +755,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				69278FE70E481A1A7122B685 /* Bolts.framework in Frameworks */,
-				1FD18DB39F781B58CB781953 /* Bolts.framework in Frameworks */,
-				C0C175C2552A54816C9162B4 /* Bolts.framework in Frameworks */,
 				C31EB5D24B893A49DEA305F7 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1593,7 +1589,7 @@
 		9AD1AD0BF0FA94823921EB9E /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0510;
+				LastUpgradeCheck = 0640;
 			};
 			buildConfigurationList = 236AB4E007FF8DE6AC05A2CD /* Build configuration list for PBXProject "Pods" */;
 			compatibilityVersion = "Xcode 3.2";
