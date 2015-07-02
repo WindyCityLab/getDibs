@@ -28,11 +28,14 @@
 #define DEV_ID_ROM_ADDRESS2 2
 #define DEV_ID_ROM_ADDRESS3 3
 #define DEV_ID_ROM_ADDRESS4 4
-int DEV_ID_1;
-int DEV_ID_2;
-int DEV_ID_3;
-int DEV_ID_4;
-
+//int DEV_ID_1;
+//int DEV_ID_2;
+//int DEV_ID_3;
+//int DEV_ID_4;
+String DEV_ID_1S;
+String DEV_ID_2S;
+String DEV_ID_3S;
+String DEV_ID_4S;
 
 
 
@@ -46,11 +49,10 @@ int DEV_ID_4;
 
 // Sketch Settings
 #define BUFSIZE                         128   // Read buffer size for incoming data
-#define VERBOSE_MODE                    true  // Enables full debug output is 'true'
+#define VERBOSE_MODE                    false  // Enables full debug output is 'true'
 
 #define MD5_HASH_SALT "6A2041DB-5942-44D7-844C-8C17D7926107"
-#define PACKET "02-01-06-11-06-E6-29-52-6E-EC-3A-7C-8F-E4-41-BD-88-3F-A8-E9-15-04-FF-"
-//#define DEV_ID "00-02"
+#define NEWPACKET "02-01-06-11-06-E6-29-52-6E-EC-3A-7C-8F-E4-41-BD-88-3F-A8-E9-15-04-FF-"
 #define onByte "01"
 #define offByte "00"
 
@@ -78,91 +80,72 @@ RTC_DS1307 rtc;
 void setup()
 {
   Serial.begin(115200);
-#ifdef AVR
   Wire.begin();
-#else
-  Wire1.begin(); // Shield I2C pins connect to alt I2C bus on Arduino Due
-#endif
-  rtc.begin();
+//  rtc.begin();
   pinMode(13,OUTPUT);
   if (! rtc.isrunning()) {
     Serial.println("RTC is NOT running!");
   }
-  
 
-//  
+
+//
   /* Initialise the module */
-    Serial.println(F("Initialising the Bluefruit LE module: "));
-    if ( !ble.begin(VERBOSE_MODE) )
-      {
-      error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
-      }
-      Serial.println( F("OK!") );
+  Serial.println(F("Initialising the Bluefruit LE module: "));
+  if ( !ble.begin(VERBOSE_MODE) )
+  {
+    error(F("Couldn't find Bluefruit, make sure it's in CoMmanD mode & check wiring?"));
+  }
+  Serial.println( F("OK!") );
 
-   // ble.println("at+gapdevname=GLD"); //obsolete, now pulls from parse
-    delay(50);
+ delay(50);
+ ble.println("AT");
+ ble.waitForOK();
+
+    DEV_ID_1S = String(EEPROM.read(DEV_ID_ROM_ADDRESS1));
+    DEV_ID_2S = String(EEPROM.read(DEV_ID_ROM_ADDRESS2));
+    DEV_ID_3S = String(EEPROM.read(DEV_ID_ROM_ADDRESS3));
+    DEV_ID_4S = String(EEPROM.read(DEV_ID_ROM_ADDRESS4));
+//    Serial.print("Current Device ID: ");
+//    Serial.print(DEV_ID_1);
+//    Serial.print(DEV_ID_2);
+//    Serial.print(DEV_ID_3);
+//    Serial.println(DEV_ID_4);
+   // ble.println("AT+GAPDEVNAME=Catalyze Equipment");
+    ble.println("AT+GAPDEVNAME");
     ble.waitForOK();
-
-//    EEPROM.write(DEV_ID_ROM_ADDRESS1,0);
-//    EEPROM.write(DEV_ID_ROM_ADDRESS2,0);
-//    EEPROM.write(DEV_ID_ROM_ADDRESS3,0);
-//    EEPROM.write(DEV_ID_ROM_ADDRESS4,2);
-    DEV_ID_1 = EEPROM.read(DEV_ID_ROM_ADDRESS1);
-    DEV_ID_2 = EEPROM.read(DEV_ID_ROM_ADDRESS2);
-    DEV_ID_3 = EEPROM.read(DEV_ID_ROM_ADDRESS3);
-    DEV_ID_4 = EEPROM.read(DEV_ID_ROM_ADDRESS4);
-    Serial.print("Current Device ID: ");
-    Serial.print(DEV_ID_1);
-    Serial.print(DEV_ID_2);
-    Serial.print(DEV_ID_3);
-    Serial.println(DEV_ID_4);
     updateManufactureData();
-    delay(100);
-    ble.waitForOK();
 
- ble.verbose(false);  // debug info is a little annoying after this point!
+    ble.verbose(false);  // debug info is a little annoying after this point!
 
 }
 
 void updateManufactureData()
 {
-  ble.print("at+gapsetadvdata=");
-  ble.print(PACKET);
-  Serial.print(PACKET);
-  ble.print(DEV_ID_1);
-  Serial.print(DEV_ID_1);
-  ble.print(DEV_ID_2);
-  Serial.print(DEV_ID_2);
-  ble.print("-");
-  Serial.print("-");
-  ble.print(DEV_ID_3);
-  Serial.print(DEV_ID_3);
-  ble.print(DEV_ID_4);
-  Serial.print(DEV_ID_4);
-  ble.print("-");
-  Serial.print("-");
+
+  String AdvPacket = (NEWPACKET + DEV_ID_1S + DEV_ID_2S + "-" + DEV_ID_3S + DEV_ID_4S + "-");
   if (isOnOffFromEEPROM())
   {
     digitalWrite(13,HIGH);
-    ble.println(onByte);
-    Serial.println(onByte);
+    AdvPacket = (AdvPacket + onByte);
     Serial.println("Machine is on");
   }
   else
   {
     digitalWrite(13,LOW);
-    ble.println(offByte);
-    Serial.println(offByte);
+    AdvPacket = (AdvPacket + offByte);
     Serial.println("Machine is off");
   }
-  ble.waitForOK();
+  ble.println("AT+GAPSETADVDATA=" + AdvPacket);
+  Serial.println(AdvPacket);
 
+  ble.waitForOK();
   ble.println("ATZ");
   ble.waitForOK();
 }
 
-void loop(void)
+void loop()
 {
+//bool authstate = true;
 
   while (!ble.isConnected()) {
     if (connectionState)
@@ -170,15 +153,18 @@ void loop(void)
       Serial.println("STATUS: No device connected");
       connectionState = false;
       authstate = false;
-      return;
     }
-  }
+  };
+//  Serial.println("got here");
+//  while(1);
+
   if (!connectionState)
   {
     connectionState = true;
     Serial.println("STATUS: device connected");
     authstate = false;
   }
+
 
   if (connectionState)
   {
@@ -199,20 +185,20 @@ void loop(void)
         if (authstate) //put actual command code here
         {
           String command = GetCommand();
-
-          if (command == "1")
+          String simplecommand = (command.substring(0,1));
+          if (simplecommand == "1")
           {
             ExecuteToggle(true);
             Serial.println("Turning ON!");
           }
-          else if (command == "0")
+          else if (simplecommand == "0")
           {
             ExecuteToggle(false);
             Serial.println("Turning OFF!");
           }
-          else if (command.charAt(0) == 2)
+          else if (simplecommand == "2")
           {
-            String  newIDString = command.substring(1,4);
+            String  newIDString = command.substring(1,5);
             ExecuteIDChange(newIDString);
 
           }
@@ -250,16 +236,13 @@ String MD5input()
   }
   Serial.println("Current time: " + ddhourstring + ":" + ddminstring);
   String resultString = String(testString + ddhourstring + ddminstring);
-  Serial.println(resultString);
+  //Serial.println(resultString);
   return resultString;
 
 }
 
 void Authenticate()
 {
-  Serial.println();
-  Serial.print("Initial BUFFER CONTENTS:");
-  Serial.print(ble.buffer);
   Serial.println();
   // Check for incoming characters from Bluefruit
   ble.println("AT+BLEUARTRX");
@@ -313,7 +296,6 @@ bool getAuthFromMD5Hash(char hashReceived[])
 {
   char resultArray[ARRAY_LENGTH];
   MD5input().toCharArray(resultArray,ARRAY_LENGTH);
- // Serial.println(resultArray);
   unsigned char* hash = MD5::make_hash(resultArray);
   char *md5str = MD5::make_digest(hash, 10);
   free(hash);
@@ -333,15 +315,20 @@ bool getAuthFromMD5Hash(char hashReceived[])
 
 void ExecuteIDChange(String newIDString)
 {
-    Serial.println("Current Device ID: ");
-    Serial.print(DEV_ID_1 + DEV_ID_2 + DEV_ID_3 + DEV_ID_4);
-  
+    Serial.print("Current Device ID: ");
+    Serial.println(DEV_ID_1S + DEV_ID_2S + DEV_ID_3S + DEV_ID_4S);
+
     Serial.print("Received Device ID: ");
     Serial.println(newIDString);
-    DEV_ID_1 = (newIDString.charAt(0));
-    DEV_ID_2 = (newIDString.charAt(1));
-    DEV_ID_3 = (newIDString.charAt(2));
-    DEV_ID_4 = (newIDString.charAt(3));
+    DEV_ID_1S = newIDString.substring(0,1);
+    DEV_ID_2S = newIDString.substring(1,2);
+    DEV_ID_3S = newIDString.substring(2,3);
+    DEV_ID_4S = newIDString.substring(3,4);
+    EEPROM.write(DEV_ID_ROM_ADDRESS1,DEV_ID_1S.toInt());
+    EEPROM.write(DEV_ID_ROM_ADDRESS2,DEV_ID_2S.toInt());
+    EEPROM.write(DEV_ID_ROM_ADDRESS3,DEV_ID_3S.toInt());
+    EEPROM.write(DEV_ID_ROM_ADDRESS4,DEV_ID_4S.toInt());
+
 
 
 }

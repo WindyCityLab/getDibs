@@ -215,9 +215,9 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     func send(command : String, toPeripheral : BLEPeripheral)
     {
         var actualHash = kMD5HashSalt + timeAsString()
-        println(actualHash)
+        //println(actualHash)
         var md5Hash = actualHash.MD5()
-        println("sending: \(md5Hash)");
+        //println("sending: \(md5Hash)");
         self.hashtoSend = md5Hash.dataUsingEncoding(NSUTF8StringEncoding)
         self.commandtoSend = command.dataUsingEncoding(NSUTF8StringEncoding)
         centralNode.connectPeripheral(toPeripheral.peripheral, options: nil);
