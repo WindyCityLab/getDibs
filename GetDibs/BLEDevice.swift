@@ -30,6 +30,7 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
     let kScanCheckTime = 30.0;
     var hashtoSend : NSData! = nil
     var commandtoSend : NSData! = nil
+    var timetoSend : NSData! = nil
     var centralNode : CBCentralManager! = nil
     var serviceUUID : CBUUID! = nil;
     var peripherals : [String:BLEPeripheral] = [:]
@@ -156,11 +157,13 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
                 case CBCharacteristicProperties.Write :
                     writeToPeripheral = characteristic as! CBCharacteristic
                     println("added write characteristic for service \(service.UUID)");
-                    println("sending the following: \(hashtoSend) of size: \(hashtoSend.length)");
+                    println("sending the following: \(timetoSend) of size: \(timetoSend.length)");
+                    peripheral.writeValue(timetoSend, forCharacteristic: writeToPeripheral, type: CBCharacteristicWriteType.WithResponse)
                     
+                    
+                    println("sending the following: \(hashtoSend) of size: \(hashtoSend.length)");
                     peripheral.writeValue(hashtoSend, forCharacteristic: writeToPeripheral, type: CBCharacteristicWriteType.WithResponse)
                     
-                  //  peripheral.writeValue(commandtoSend, forCharacteristic: writeToPeripheral, type: CBCharacteristicWriteType.WithResponse)
 
                 default :
                     ()
@@ -203,21 +206,33 @@ class BLEDevice : NSObject, CBCentralManagerDelegate, CBPeripheralDelegate
         peripheral.delegate = self;
     }
 
-    func timeAsString() -> String
+    func timeAsStringMD5() -> String
     {
         var todaysDate:NSDate = NSDate()
         var dateFormatter:NSDateFormatter = NSDateFormatter()
-        dateFormatter.dateFormat = "HHmm"
+        dateFormatter.dateFormat = "ddHH"
         var DateInFormat:String = dateFormatter.stringFromDate(todaysDate)
         println(DateInFormat)
         return DateInFormat
     }
+    
+    func timeAsString() -> String
+    {
+        var todaysDate:NSDate = NSDate()
+        var dateFormatter:NSDateFormatter = NSDateFormatter()
+        dateFormatter.dateFormat = "yyyyMMddHHmmss"
+        var DateInFormat:String = dateFormatter.stringFromDate(todaysDate)
+        println(DateInFormat)
+        return DateInFormat
+        
+    }
     func send(command : String, toPeripheral : BLEPeripheral)
     {
-        var actualHash = kMD5HashSalt + timeAsString()
+        var actualHash = kMD5HashSalt + timeAsStringMD5()
         //println(actualHash)
         var md5Hash = actualHash.MD5()
         //println("sending: \(md5Hash)");
+        self.timetoSend = timeAsString().dataUsingEncoding(NSUTF8StringEncoding)
         self.hashtoSend = md5Hash.dataUsingEncoding(NSUTF8StringEncoding)
         self.commandtoSend = command.dataUsingEncoding(NSUTF8StringEncoding)
         centralNode.connectPeripheral(toPeripheral.peripheral, options: nil);

@@ -13,7 +13,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
     @IBOutlet weak var tableView: UITableView!
 
-    var equipment : BLEDevice! = nil;
+    var bleDevice : BLEDevice! = nil;
     var allEquipment : [String : Equipment] = [:]
     var authorizedEquipment : [String:Equipment] = [:]
 
@@ -25,7 +25,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         if peripheral.isOn
         {
             peripheral.isOn = false;
-            self.equipment.send("0", toPeripheral: peripheral);
+            self.bleDevice.send("0", toPeripheral: peripheral);
             self.tableView.reloadData()
         }
         else
@@ -33,7 +33,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             let e = allEquipment["\(peripheral.deviceID)"];
             let confirm = UIAlertController(title: "Please Confirm", message: "Do you want to turn \(e!.name) on?", preferredStyle: UIAlertControllerStyle.Alert)
             let ok = UIAlertAction(title: "YES", style: UIAlertActionStyle.Destructive, handler: { (action) -> Void in
-                self.equipment.send("1", toPeripheral: peripheral);
+                self.bleDevice.send("1", toPeripheral: peripheral);
                 peripheral.isOn = true;
                 self.tableView.reloadData();
             })
@@ -55,7 +55,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         var cell = tableView.dequeueReusableCellWithIdentifier("equipmentCell") as! EquipmentCell
         cell.delegate = self
-        let item = equipment.peripheralsArray[indexPath.row]
+        let item = bleDevice.peripheralsArray[indexPath.row]
         cell.peripheral = item
         cell.onOffSwitch.enabled = false;
         if let equipment = allEquipment["\(item.deviceID)"]
@@ -77,29 +77,56 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     }
 
     func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if equipment == nil
+        if bleDevice == nil
         {
             return 0;
         }
-        return equipment.peripheralsArray.count;
+        return bleDevice.peripheralsArray.count;
     }
 
     func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         
-        let item = equipment.peripheralsArray[indexPath.row];
+        let item = bleDevice.peripheralsArray[indexPath.row];
+        let equipment = allEquipment["\(item.deviceID)"]
+        
+
+        
         
         let alert = UIAlertController(title: "Edit Equipment ID", message: "Change to any 4 digit number", preferredStyle: .Alert)
         alert.addTextFieldWithConfigurationHandler { (textField) -> Void in
-            textField.placeholder = "XXXX";
+            textField.placeholder = "NAME";
+            textField.text = equipment?.name
         }
+        
+        alert.addTextFieldWithConfigurationHandler { (textField) -> Void in
+            textField.placeholder = "XXXX";
+            textField.text = equipment?.machineID
+        }
+        
         let cancel = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.Cancel) { (action) -> Void in
             ()
         }
         let submit = UIAlertAction(title: "Change", style: UIAlertActionStyle.Destructive) { (action) -> Void in
-            let textField = alert.textFields?.first as! UITextField
-            self.equipment.send("2\(textField.text)", toPeripheral: item)
+            let IDTextField = alert.textFields?.last as! UITextField
+            let nameTextField = alert.textFields?.first as! UITextField
+            self.bleDevice.send("2\(IDTextField.text)", toPeripheral: item)
+            equipment?.name = nameTextField.text
+            equipment?.machineID = IDTextField.text
+
+            equipment?.saveInBackgroundWithBlock({ (success, error) -> Void in
+                if !success
+                {
+                    //Throw an error
+                }else
+                {
+                    println("object saved")
+                 //   self.queryAuthorizedEquipment()
+
+                }
+            })
+            
         }
         alert.addAction(cancel);
         alert.addAction(submit);
@@ -131,9 +158,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                     let m = machine as! AuthorizedEquipment
                     self.authorizedEquipment["<\(m.equipment.machineID)>"] = m.equipment
                 }
-                self.equipment = BLEDevice.sharedInstance;
-                self.equipment.delegate = self;
-                self.equipment.begin();
+                self.bleDevice = BLEDevice.sharedInstance;
+                self.bleDevice.delegate = self;
+                self.bleDevice.begin();
                 self.tableView.reloadData()
             })
         }

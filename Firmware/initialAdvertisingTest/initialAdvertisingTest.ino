@@ -37,7 +37,7 @@ String DEV_ID_2S;
 String DEV_ID_3S;
 String DEV_ID_4S;
 
-
+String AdvPacket;
 
 // If you are using Hardware Serial
 // The following macros declare the Serial port you are using. Uncomment this
@@ -81,8 +81,8 @@ void setup()
 {
   Serial.begin(115200);
   Wire.begin();
-//  rtc.begin();
   pinMode(13,OUTPUT);
+  rtc.begin();
   if (! rtc.isrunning()) {
     Serial.println("RTC is NOT running!");
   }
@@ -101,16 +101,16 @@ void setup()
  ble.println("AT");
  ble.waitForOK();
 
+//    EEPROM.write(DEV_ID_ROM_ADDRESS1,0);
+//    EEPROM.write(DEV_ID_ROM_ADDRESS2,0);
+//    EEPROM.write(DEV_ID_ROM_ADDRESS3,0);
+//    EEPROM.write(DEV_ID_ROM_ADDRESS4,0);
+
+
     DEV_ID_1S = String(EEPROM.read(DEV_ID_ROM_ADDRESS1));
     DEV_ID_2S = String(EEPROM.read(DEV_ID_ROM_ADDRESS2));
     DEV_ID_3S = String(EEPROM.read(DEV_ID_ROM_ADDRESS3));
     DEV_ID_4S = String(EEPROM.read(DEV_ID_ROM_ADDRESS4));
-//    Serial.print("Current Device ID: ");
-//    Serial.print(DEV_ID_1);
-//    Serial.print(DEV_ID_2);
-//    Serial.print(DEV_ID_3);
-//    Serial.println(DEV_ID_4);
-   // ble.println("AT+GAPDEVNAME=Catalyze Equipment");
     ble.println("AT+GAPDEVNAME");
     ble.waitForOK();
     updateManufactureData();
@@ -122,7 +122,7 @@ void setup()
 void updateManufactureData()
 {
 
-  String AdvPacket = (NEWPACKET + DEV_ID_1S + DEV_ID_2S + "-" + DEV_ID_3S + DEV_ID_4S + "-");
+  AdvPacket = (NEWPACKET + DEV_ID_1S + DEV_ID_2S + "-" + DEV_ID_3S + DEV_ID_4S + "-");
   if (isOnOffFromEEPROM())
   {
     digitalWrite(13,HIGH);
@@ -151,6 +151,8 @@ void loop()
     if (connectionState)
     {
       Serial.println("STATUS: No device connected");
+      Serial.println();
+      Serial.println("----------------------------------------------");
       connectionState = false;
       authstate = false;
     }
@@ -163,11 +165,15 @@ void loop()
     connectionState = true;
     Serial.println("STATUS: device connected");
     authstate = false;
+   // updateManufactureData();
   }
 
 
   if (connectionState)
   {
+
+    updateTime();
+
     if (!authstate)
     {
       Authenticate();
@@ -177,10 +183,11 @@ void loop()
     {
       Serial.println("User authorized");
     }
-    else {
+    else
+    {
       Serial.println("User NOT authorized, disconnecting");
       ble.println("AT+GAPDISCONNECT");
-    }
+     }
 
         if (authstate) //put actual command code here
         {
@@ -223,19 +230,19 @@ String MD5input()
   DateTime MD5Time = rtc.now();
   char testString[] = "6A2041DB-5942-44D7-844C-8C17D7926107";
   int ddhour = MD5Time.hour();
-  String ddminstring = String(MD5Time.minute());
+  int ddday = MD5Time.day();
+  String dddaystring = String(MD5Time.day());
   String ddhourstring = String(MD5Time.hour());
-  int ddmin = MD5Time.minute();
   if (ddhour < 10)
   {
     ddhourstring = ("0" + String(ddhour));
   }
-  if (ddmin < 10)
+  if (ddday < 10)
   {
-    ddminstring = ("0" + String(ddmin));
+    dddaystring = ("0" + String(ddday));
   }
-  Serial.println("Current time: " + ddhourstring + ":" + ddminstring);
-  String resultString = String(testString + ddhourstring + ddminstring);
+  Serial.println("Current Day: " + dddaystring + " " + "Current time: " + ddhourstring);
+  String resultString = String(testString + dddaystring + ddhourstring);
   //Serial.println(resultString);
   return resultString;
 
@@ -243,14 +250,10 @@ String MD5input()
 
 void Authenticate()
 {
-  Serial.println();
+
   // Check for incoming characters from Bluefruit
   ble.println("AT+BLEUARTRX");
   ble.readline(100);  // 100ms timeout
-  //Serial.println();
-  //Serial.print("BUFFER CONTENTS:");
-  //Serial.print(ble.buffer);
-  //Serial.println();
   while (strcmp(ble.buffer, "OK") == 0) {
     ble.println("AT+BLEUARTRX");
     ble.readline(100);
@@ -260,6 +263,11 @@ void Authenticate()
   Serial.println(ble.buffer);
 
   authstate = getAuthFromMD5Hash(ble.buffer);
+  if (!authstate)
+  {
+    delay(3000);
+    authstate = getAuthFromMD5Hash(ble.buffer);
+  }
 
 }
 
@@ -328,7 +336,25 @@ void ExecuteIDChange(String newIDString)
     EEPROM.write(DEV_ID_ROM_ADDRESS2,DEV_ID_2S.toInt());
     EEPROM.write(DEV_ID_ROM_ADDRESS3,DEV_ID_3S.toInt());
     EEPROM.write(DEV_ID_ROM_ADDRESS4,DEV_ID_4S.toInt());
-
-
+}
+void updateTime()
+{
+  ble.println("AT+BLEUARTRX");
+  ble.readline(100);  // 100ms timeout
+  while (strcmp(ble.buffer, "OK") == 0)
+  {
+    ble.println("AT+BLEUARTRX");
+    ble.readline(100);
+    }
+  String timeString = ble.buffer;
+  Serial.println(timeString);
+  String yearString = (timeString.substring(1,4));
+  String monthString = (timeString.substring(4,6));
+  String dayString = (timeString.substring(6,8));
+  String hourString = (timeString.substring(8,10));
+  String minString = (timeString.substring(10,12));
+  String secString = (timeString.substring(12,15));
+  Serial.println("New time: " + hourString + ":" + minString);
+  rtc.adjust(DateTime(yearString.toInt(), monthString.toInt(), dayString.toInt(), hourString.toInt(), minString.toInt(), secString.toInt()));
 
 }
